@@ -1,5 +1,5 @@
 import CustomContainer from "@/components/ui/CustomContainer";
-import ChooseRole from "@/components/features/jobs/ChooseRole";
+import ChooseRole from "@/components/features/craftsman/ChooseRole";
 
 const ChooseRolePage = () => {
   return (
@@ -11,4 +11,4 @@ const ChooseRolePage = () => {
   );
 };
 
-export default ChooseRolePage;
+export default ChooseRolePage;

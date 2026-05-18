@@ -6,6 +6,7 @@ export interface User {
    email: string;
    role: string;
    isVerifyEmail: boolean;
+   accessToken?: string;
 }
 
 export interface AuthStore {

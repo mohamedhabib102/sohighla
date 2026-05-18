@@ -5,16 +5,26 @@
   --foreground: #171717;
 }
 
-@theme inline {
+@theme  {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --font-sans: var(--font-tajawal), sans-serif;
   --font-tajawal: var(--font-tajawal);
+  --font-lemonada: var(--font-lemonada);
+  --color-primary: #F59E0B;
+  --color-secondary: #0F172A;
+  --background-image-linear-main: linear-gradient(to right, #EA580C, #F59E0B);
 }
+
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: "Tajawal", sans-serif;
+  font-family: var(--font-tajawal), sans-serif;
+}
+
+.font-lemonada {
+   font-family: "Lemonada", cursive !important;
 }
 
 

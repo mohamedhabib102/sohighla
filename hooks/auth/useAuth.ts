@@ -1,6 +1,9 @@
 import { 
+  resentOTP,
   signIn, 
-  signUp 
+  signUp, 
+  verifyEmail,
+  verifyResetPassword
 } from "@/services/auth/auth.service"
 import { useMutation } from "@tanstack/react-query"
 import { AxiosError } from "axios"
@@ -53,6 +56,69 @@ export const useSignIn = () => {
 
     onSuccess: () => {
       toast.success(" تم تسجيل الدخول بنجاح ");
+    }
+  });
+
+
+    return {
+        mutate: mutation.mutateAsync,
+        isLoading: mutation.isPending,
+    }
+}
+
+
+
+export const useResentOTP = () => {
+  const mutation = useMutation({
+    mutationFn: resentOTP,
+    onSuccess: () => {
+      toast.success("تم إرسال رمز التحقق المكون من 4 أرقام بنجاح!");    }
+    , 
+    onError: (error: unknown) => {
+      const err = error as AxiosError<ApiErrorData>;
+      if (err.response?.status === 400) {
+        toast.error(" هذا البريد الاكتروني غير مسجل ");
+      } else {
+        toast.error("حدث خطأ بالخادم يرجى المحاولة مرة اخرى");
+      }
+    }    
+  });
+
+
+    return {
+        mutate: mutation.mutateAsync,
+        isLoading: mutation.isPending,
+    }
+}
+
+export const useVerifyEmail = () => {
+  const mutation = useMutation({
+    mutationFn: verifyEmail,
+    onSuccess: () => {
+      toast.success(" تم التحقق من البريد الاكتروني ");
+    },
+    onError: (error: unknown) => {
+      const err = error as AxiosError<ApiErrorData>;
+      if (err.response?.status === 400) {
+        toast.error(" الرمز المدخل غير صحيح او منتهي الصلاحية ");
+      } else {
+        toast.error("حدث خطأ بالخادم يرجى المحاولة مرة اخرى");
+      }
+    }
+  });
+
+
+    return {
+        mutate: mutation.mutateAsync,
+        isLoading: mutation.isPending,
+    }
+}
+
+export const useVerifyResetPassword = () => {
+  const mutation = useMutation({
+    mutationFn: verifyResetPassword,
+    onSuccess: () => {
+      toast.success(" تم التحقق من رمز التحقق ");
     }
   });
 

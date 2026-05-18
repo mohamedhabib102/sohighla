@@ -11,7 +11,7 @@ const ButtonPlatform = ({
     return (
         <button
          onClick={() => signIn(provider, {
-            callbackUrl: `/choose-role`
+            callbackUrl: `/auth/choose-role?mode=platform`
          })}
         type="button" 
         name={`${provider}_auth`}

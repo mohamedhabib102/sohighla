@@ -1,6 +1,6 @@
 "use client";
 
-import Button from "@/components/ui/button";
+import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import ButtonPlatform from "@/components/ui/LoginPlatform";
 import Link from "next/link";
@@ -9,15 +9,18 @@ import { FcGoogle } from "react-icons/fc";
 import { IoLockClosed } from "react-icons/io5";
 import { MdEmail } from "react-icons/md";
 import { useSignIn } from "@/hooks/auth/useAuth";
-import { Controller, useForm } from "react-hook-form";
-import { signInType } from "@/types/api";
 import toast from "react-hot-toast";
-import { isValidPassword } from "@/utils/validtions";
+import { useAuthStore } from "@/store/auth-store";
+import { User } from "@/types/stores";
 
 
 const FormsSignIn = () => {
 
   const { mutate: signInMutate, isLoading } = useSignIn();
+    const {user, login} =  useAuthStore()
+
+
+
      
   
      const handlerSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -32,17 +35,25 @@ const FormsSignIn = () => {
         return;
       };
       const res = await signInMutate(data);
-      console.log(res);
+      const userData:User = {
+        personID: res.personID,
+        firstName: res.firstName,
+        lastName: res.lastName,
+        email: res.email,
+        role: res.role,
+        isVerifyEmail: res.isVerifyEmail,
+        accessToken: res.accessToken,
+      }
+      login(userData)
      }
-  
   return (
     <div className="w-full max-w-[600px] mx-auto p-6 md:p-14 flex flex-col justify-center min-h-screen">
 
       <div className="mb-8">
-        <h1 className="text-3xl font-semibold text-[#0F172A] mb-2 rtl text-right">
+        <h1 className="text-3xl font-semibold text-secondary mb-2 rtl text-right">
           تسجيل الدخول
         </h1>
-        <p className="text-[#44474C] text-lg rtl text-right">
+        <p className="text-secondary/50 text-lg rtl text-right">
           مرحباً بك مجدداً! قم بتسجيل الدخول لمتابعة أعمالك.
         </p>
       </div>

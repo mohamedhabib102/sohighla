@@ -1,21 +1,29 @@
 "use client";
-
-
-import Button from "@/components/ui/button";
+import Button from "@/components/ui/Button";
 import { useSignUp } from "@/hooks/auth/useAuth";
+import { useAuthStore } from "@/store/auth-store";
 import { signUpType } from "@/types/api";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
 import toast from "react-hot-toast";
 import { FaUser, FaTools, FaCheck, FaShieldAlt } from "react-icons/fa";
 import { HiArrowLeft } from "react-icons/hi";
 
 
-const ChooseRole = () => {
+const ChooseRoleContent = () => {
   const [choose, setChoose] = useState("")
     const {mutate, isLoading} = useSignUp()
     const [user, setUser] = useState<signUpType | null>(null);
+    const searchParams = useSearchParams();
     const router = useRouter();
+    const {login} =  useAuthStore();
+    const {data:session} = useSession();
+
+    const mode = searchParams.get("mode");
+
+
+    
   
     const handlerSignUp = async () => {
       if (!user || !choose) {
@@ -29,9 +37,49 @@ const ChooseRole = () => {
         Password: user.Password,
         Role: choose,
       }
-      await mutate(userData)
+      const res = await mutate(userData)
       localStorage.removeItem("user");
+      const data = {
+        personID: res?.personID,
+        firstName: res?.firstName,
+        lastName: res?.lastName,
+        email: res?.email,
+        role: res?.role,
+        isVerifyEmail: res?.isVerifyEmail,
+        
+      }
+      login(data)
       router.push("/");
+    }
+
+
+    const handerlPlatform = async () => {
+      if (!choose) {
+        toast.error("الرجاء اختيار نوع الحساب ")
+        return;
+      }
+      console.log(session?.id_token, choose);
+      const staticUser = {
+        personID: 10,
+        firstName: "Ahmed",
+        lastName: "Ali",
+        email: "[EMAIL_ADDRESS]",
+        role: choose,
+        isVerifyEmail: false,
+      }
+
+      login(staticUser)
+      router.push("/")
+    }
+
+
+
+    const submitHandler = async () => {
+      if (mode === "register") {
+        await handlerSignUp();
+      }else{
+        await handerlPlatform();
+      }
     }
 
 
@@ -48,7 +96,7 @@ const ChooseRole = () => {
         <div className="flex items-center w-full max-w-2xl relative">
           {/* Step 1: Sign Up (Completed) */}
           <div className="flex flex-col items-center z-10 relative">
-            <div className="w-10 h-10 rounded-full bg-[#0F172A] flex items-center justify-center text-white border-4 border-white">
+            <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-white border-4 border-white">
               <FaCheck size={16} />
             </div>
             <span className="absolute -bottom-8 text-sm font-medium text-gray-500 whitespace-nowrap">
@@ -73,7 +121,7 @@ const ChooseRole = () => {
 
       {/* Main Heading */}
       <div className="text-center mb-12 mt-12">
-        <h1 className="text-3xl md:text-5xl font-bold text-[#0F172A] mb-4">
+        <h1 className="text-3xl md:text-5xl font-bold text-secondary mb-4">
           اختر نوع الحساب
         </h1>
         <p className="text-gray-500 text-lg max-w-2xl mx-auto leading-relaxed">
@@ -93,7 +141,7 @@ const ChooseRole = () => {
           <div className="w-24 h-24 rounded-full bg-[#EEF2FF] flex items-center justify-center mb-6 group-hover:bg-[#E0E7FF] transition-colors">
             <FaUser size={40} className="text-[#4338CA]" />
           </div>
-          <h3 className="text-2xl font-bold text-[#0F172A] mb-4">عميل</h3>
+          <h3 className="text-2xl font-bold text-secondary mb-4">عميل</h3>
           <p className="text-gray-500 leading-relaxed mb-8 h-20">
             أبحث عن حرفيين مهرة لإنجاز أعمالي المنزلية ومشاريعي الخاصة بكل سهولة
             وأمان.
@@ -112,10 +160,10 @@ const ChooseRole = () => {
           <div className="w-24 h-24 rounded-full bg-[#FFF7ED] flex items-center justify-center mb-6 group-hover:bg-[#FFEDD5] transition-colors">
             <FaTools size={40} className="text-[#EA580C]" />
           </div>
-          <h3 className="text-2xl font-bold text-[#0F172A] mb-4">
+          <h3 className="text-2xl font-bold text-secondary mb-4">
             حرفي / فني
           </h3>
-          <p className="text-gray-500 leading-relaxed mb-8 h-20">
+          <p className="text-secondary/50 leading-relaxed mb-8 h-20">
             أمتلك مهارات فنية وأرغب في تقديم خدماتي للعملاء وزيادة دخلي من خلال
             المنصة.
           </p>
@@ -129,12 +177,20 @@ const ChooseRole = () => {
         <Button
           title=" تأكيد الاختيار "
           type="button"
-          onClick={handlerSignUp}
+          onClick={submitHandler}
           isLoading={isLoading}
         />
     
 
     </div>
+  );
+};
+
+const ChooseRole = () => {
+  return (
+    <Suspense fallback={<div className="flex justify-center p-20 text-gray-500">جاري التحميل...</div>}>
+      <ChooseRoleContent />
+    </Suspense>
   );
 };
 

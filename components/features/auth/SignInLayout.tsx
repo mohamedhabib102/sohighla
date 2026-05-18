@@ -29,7 +29,7 @@ const SignInLayout = () => {
           priority
         />
         
-        <div className="absolute bottom-16 left-0 p-4 z-20 flex justify-start bg-[#F59E0B]/15 w-full">
+        <div className="absolute bottom-16 left-0 p-4 z-20 flex justify-start bg-primary/15 w-full">
           <DescriptionSignUp className="max-w-[500px]" />
         </div>
       </div>
