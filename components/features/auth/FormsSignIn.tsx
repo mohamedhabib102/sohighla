@@ -1,6 +1,6 @@
 "use client";
 
-import Button from "@/components/ui/Button";
+import Button from "@/components/ui/ButtonCustom";
 import Input from "@/components/ui/Input";
 import ButtonPlatform from "@/components/ui/LoginPlatform";
 import Link from "next/link";

@@ -1,5 +1,5 @@
 "use client";
-import Button from "@/components/ui/Button";
+import Button from "@/components/ui/ButtonCustom";
 import { useSignUp } from "@/hooks/auth/useAuth";
 import { useAuthStore } from "@/store/auth-store";
 import { signUpType } from "@/types/api";

@@ -1,6 +1,6 @@
 "use client";
 
-import Button from "@/components/ui/Button";
+import Button from "@/components/ui/ButtonCustom";
 import Input from "@/components/ui/Input";
 import { isValidPassword } from "@/utils/validtions";
 import Link from "next/link";
@@ -37,7 +37,7 @@ const FormSignUp = () => {
   return (
     <div className="w-full max-w-[600px] mx-auto p-6 md:p-14 flex flex-col justify-center min-h-screen">
         <div className="mb-8">
-          <h1 className="text-3xl font-semibold text-[#0F172A] mb-2">
+          <h1 className="text-3xl font-semibold text-secondary mb-2">
             
             إنشاء حساب جديد
           </h1>
