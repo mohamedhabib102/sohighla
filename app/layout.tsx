@@ -22,8 +22,8 @@ const lemonada = Lemonada({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://sohighla.vercel.app"),
-  title: "صهايلا | منصة الحرفيين والمبدعين",
-  description: "المنصة الأولى لربط الحرفيين والمبدعين بالعملاء في Jeddah و Makkah وكافة المدن لتقديم أفضل خدمات الجبس والديكور والصيانة المنزلية.",
+  title: "شُغلَة | منصة ربط الحرفيين بالعملاء",
+  description: "منصة شُغلَة تربط الحرفيين والصنايعية بالعملاء مباشرة للحصول على فرص عمل أسرع وخدمات موثوقة في الجبس والديكور والصيانة المنزلية داخل مختلف مدن الوطن العربي." , 
   icons: {
     icon: "/imgs/default_2.jpeg",
     shortcut: "/imgs/default_2.jpeg",
