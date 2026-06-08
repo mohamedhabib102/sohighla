@@ -47,21 +47,21 @@ const VerifyCodeForm = () => {
     newCode[index] = value;
     setCode(newCode);
 
-    // Auto-focus next input if a digit is entered
-    if (value && index < 3) {
-      inputRefs[index + 1].current?.focus();
+    // Auto-focus next input if a digit is entered (RTL: move backwards)
+    if (value && index > 0) {
+      inputRefs[index - 1].current?.focus();
     }
   };
 
   // Handle keypresses, specifically backspace
   const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Backspace") {
-      if (!code[index] && index > 0) {
-        // Clear previous input and focus it
+      if (!code[index] && index < 3) {
+        // Clear next input and focus it (RTL: move backwards)
         const newCode = [...code];
-        newCode[index - 1] = "";
+        newCode[index + 1] = "";
         setCode(newCode);
-        inputRefs[index - 1].current?.focus();
+        inputRefs[index + 1].current?.focus();
       } else {
         // Clear current input
         const newCode = [...code];
@@ -71,16 +71,7 @@ const VerifyCodeForm = () => {
     }
   };
 
-  // Handle paste events
-  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    const pastedData = e.clipboardData.getData("text").trim();
-    if (!/^\d{4}$/.test(pastedData)) return;
-
-    const digits = pastedData.split("");
-    setCode(digits);
-    inputRefs[3].current?.focus();
-  };
+  // Handle paste events (now inline in input)
 
   const handleResend = async() => {
     if (!canResend) return;
@@ -89,7 +80,7 @@ const VerifyCodeForm = () => {
 
   const handleSubmit = async(e: React.FormEvent) => {
     e.preventDefault();
-    const verificationCode = code.join("");
+    const verificationCode = [code[3], code[2], code[1], code[0]].join("");
     
     if (verificationCode.length < 4) {
       toast.error("يرجى إدخال الرمز المكون من 4 أرقام");
@@ -99,7 +90,7 @@ const VerifyCodeForm = () => {
   try {
     const res = await mutate({ email, code: verificationCode })
     login(res)
-    router.push(`/dashboard-craftsman/profile`);
+    user?.role === "customer" ? router.push(`/`) : router.push(`/dashboard-craftsman/profile`);
   } catch (error) {
     console.log(error)
   }};
@@ -130,20 +121,27 @@ const VerifyCodeForm = () => {
       <form onSubmit={handleSubmit} className="space-y-8">
         
         {/* Verification Inputs */}
-        <div dir="ltr" className="flex gap-4 justify-center">
-          {code.map((digit, index) => (
+        <div className="flex gap-4 justify-center flex-row-reverse">
+          {[3, 2, 1, 0].map((index) => (
             <input
               key={index}
               ref={inputRefs[index]}
               type="text"
               inputMode="numeric"
               maxLength={1}
-              value={digit}
+              value={code[index]}
               onChange={(e) => handleChange(index, e.target.value)}
               onKeyDown={(e) => handleKeyDown(index, e)}
-              onPaste={handlePaste}
+              onPaste={(e) => {
+                e.preventDefault();
+                const pastedData = e.clipboardData.getData("text").trim();
+                if (!/^\d{4}$/.test(pastedData)) return;
+                const digits = pastedData.split("");
+                setCode([digits[3], digits[2], digits[1], digits[0]]);
+                inputRefs[0].current?.focus();
+              }}
               className="w-14 h-14 md:w-16 md:h-16 text-center text-2xl font-black text-secondary bg-[#F0F3FF] rounded-2xl border-2 border-[#C4C6CD] focus:border-[#EA580C] focus:bg-white outline-none transition-all duration-200 shadow-sm"
-              autoFocus={index === 0}
+              autoFocus={index === 3}
             />
           ))}
         </div>

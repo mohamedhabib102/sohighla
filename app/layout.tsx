@@ -20,6 +20,9 @@ const lemonada = Lemonada({
 });
 
 
+
+
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://sohighla.vercel.app"),
   title: "شُغلَة | منصة ربط الحرفيين بالعملاء",

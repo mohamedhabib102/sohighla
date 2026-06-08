@@ -3,7 +3,8 @@ import {
   signIn, 
   signUp, 
   verifyEmail,
-  verifyResetPassword
+  verifyResetPassword,
+  resetPassword
 } from "@/services/auth/auth.service"
 import { useMutation } from "@tanstack/react-query"
 import { AxiosError } from "axios"
@@ -119,6 +120,14 @@ export const useVerifyResetPassword = () => {
     mutationFn: verifyResetPassword,
     onSuccess: () => {
       toast.success(" تم التحقق من رمز التحقق ");
+    },
+    onError: (error: unknown) => {
+      const err = error as AxiosError<ApiErrorData>;
+      if (err.response?.status === 400) {
+        toast.error(" الرمز المدخل غير صحيح او منتهي الصلاحية ");
+      } else {
+        toast.error("حدث خطأ بالخادم يرجى المحاولة مرة اخرى");
+      }
     }
   });
 
@@ -128,3 +137,28 @@ export const useVerifyResetPassword = () => {
         isLoading: mutation.isPending,
     }
 }
+
+export const useResetPassword = () => {
+  const mutation = useMutation({
+    mutationFn: resetPassword,
+    onSuccess: () => {
+      toast.success(" تم تحديث كلمة المرور بنجاح ");
+    },
+    onError: (error: unknown) => {
+      const err = error as AxiosError<ApiErrorData>;
+      if (err.response?.status === 400) {
+        toast.error(" حدث خطأ في تحديث كلمة المرور ");
+      } else {
+        toast.error("حدث خطأ بالخادم يرجى المحاولة مرة اخرى");
+      }
+    }
+  });
+
+
+    return {
+        mutate: mutation.mutateAsync,
+        isLoading: mutation.isPending,
+    }
+}
+
+

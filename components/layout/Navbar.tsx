@@ -6,6 +6,7 @@ import ButtonHeader from "../ui/ButtonHeader";
 import { LINKSARRAY } from "@/types/index";
 import { useAuthStore } from "@/store/auth-store";
 import { log } from "console";
+import { signOut } from "next-auth/react";
 
 
 
@@ -17,6 +18,7 @@ const Navbar = ({links}: {links: LINKSARRAY[]}) => {
 
   const handlerLogout = () => {
     logout()
+    signOut({callbackUrl: "/"})
     router.push("/")
   }
 
@@ -27,6 +29,19 @@ const Navbar = ({links}: {links: LINKSARRAY[]}) => {
       <ul className="hidden lg:flex gap-8 items-center">
         {links.map((link) => {
           const isActive = pathname === link.href;
+          
+          if (link.type === "customer") {
+            return (
+              <li key={link.id}>
+                <ButtonHeader 
+                  text={link.label} 
+                  href={link.href} 
+                  variant="primary" 
+                />
+              </li>
+            );
+          }
+          
           return (
             <li key={link.id}>
               <Link

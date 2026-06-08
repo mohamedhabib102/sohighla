@@ -31,8 +31,8 @@ export const verifyEmail =  async(data:verifyEmailType) => {
 
 
 export const  verifyResetPassword = async (data:verifyEmailType) => {
-  const res = await axiosInstance.post(`/VerifyOtpForPasswordReset?email=${data.email}&otp=${data.code}`)
-  return res.data.resetToken; // enter this `resetToken` is here => token  
+  const res = await axiosInstance.post(`/VerifyOtpForPasswordReset?email=${data.email}&code=${data.code}`)
+  return res.data.resetToken; // enter this `resetToken` is here => data  
 }
 
 

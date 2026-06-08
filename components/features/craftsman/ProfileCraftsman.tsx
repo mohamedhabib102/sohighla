@@ -82,7 +82,7 @@ const ProfileCraftsman = () => {
       
       {/* 1. Header Section (Original Style) */}
       <article className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden pb-6">
-        <div className="relative w-full aspect-3/1 max-h-[400px]">
+        <div className="relative w-full aspect-3/1 max-h-100">
             <Image src={craftsman.bannerImageURL || "/imgs/banner.png"} 
             alt="banner" 
             fill 

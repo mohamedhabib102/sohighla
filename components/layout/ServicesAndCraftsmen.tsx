@@ -169,13 +169,13 @@ const ServicesAndCraftsmen = () => {
                                                 </div>
                                                 <div className="flex items-center gap-2 text-gray-400 text-xs justify-start">
                                                     <HiOutlineMapPin className="text-primary text-base shrink-0" />
-                                                    <span>المملكة العربية السعودية</span>
+                                                    <span>{craftsman.locationText || "مصر المنصوره"}</span>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div className="p-5 pt-0">
-                                        <Link href={`/craftsmen/${craftsman.craftsmanID}`} className="block w-full">
+                                        <Link href={`/craftsmen/${craftsman.personID}`} className="block w-full">
                                             <button className="w-full py-2.5 rounded-xl border border-secondary hover:border-primary text-secondary hover:text-white hover:bg-secondary font-bold transition-all text-xs cursor-pointer">
                                                 عرض الملف الشخصي
                                             </button>

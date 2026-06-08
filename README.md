@@ -1,36 +1,154 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# شُغلَة (Shughla / SoHighla) - Connecting Craftsmen with Clients
 
-## Getting Started
+An Arabic platform that connects skilled craftsmen and tradespeople directly with clients, enabling faster job opportunities and trusted services in gypsum, decoration, home maintenance, and more across Arab cities.
 
-First, run the development server:
+**Website:** [sohighla.vercel.app](https://sohighla.vercel.app)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## 📋 About
+
+Shughla is a marketplace/directory platform (not a service provider) that enables:
+
+- **Clients** to browse, search, and connect with available craftsmen
+- **Craftsmen** to create professional portfolios showcasing their work, skills, and experience
+- Direct communication between both parties with no intermediary
+
+---
+
+## 🛠 Tech Stack
+
+| Category | Technology |
+|----------|------------|
+| **Framework** | Next.js 16.2.5 (App Router) |
+| **Language** | TypeScript 5 |
+| **UI Library** | React 19.2.4 |
+| **Styling** | Tailwind CSS v4 |
+| **State Management** | Zustand v5 (with encrypted persist) |
+| **Server State** | TanStack React Query v5 |
+| **Authentication** | NextAuth.js v4 (Google + Facebook) + custom JWT |
+| **Forms** | react-hook-form v7 |
+| **HTTP Client** | Axios v1.16 with interceptors |
+| **Notifications** | react-hot-toast v2 |
+| **Icons** | react-icons v5 |
+| **Animation** | framer-motion v12 |
+| **Encryption** | crypto-js v4 |
+| **Fonts** | Google Fonts (Tajawal, Lemonada) |
+
+---
+
+## ✨ Features
+
+### Authentication & User Management
+- Sign in via email/password or Google/Facebook OAuth
+- Role selection (client / craftsman)
+- Email verification via OTP
+- Password reset flow (forgot password → verify OTP → reset)
+- Encrypted session storage using Zustand + AES
+
+### Public Pages
+- **Homepage** - Hero section with search, feature cards, service categories, featured craftsmen
+- **Craftsmen Directory** (`/craftsmen`) - Browse all craftsmen with category filtering
+- **Craftsman Detail** (`/craftsmen/[id]`) - Full profile (images, video, skills, reviews)
+- **About Us** (`/about-us`)
+- **How It Works** (`/how-it-works`)
+- **Terms & Conditions** (`/terms`)
+- **Privacy Policy** (`/privacy-policy`)
+- **Delete Account** (`/delete-account`)
+
+### Client Dashboard (`/dashboard-client`)
+- View latest contact request
+- Manage all previous requests (pending / completed / cancelled)
+- Rate craftsmen after work completion
+- Client profile page
+
+### Craftsman Dashboard (`/dashboard-craftsman`)
+- Stats overview (views, contact requests, profile completion, rating)
+- Create / update portfolio (images, video, skills, experience)
+- Work gallery management (add/delete images)
+- Update phone number
+- Collapsible sidebar navigation
+
+---
+
+## 📁 Project Structure
+
+```
+my-app/
+├── app/                          # Next.js App Router pages
+│   ├── (auth)/auth/              # Authentication pages
+│   ├── (protected)/              # Protected pages (require auth)
+│   ├── craftsmen/                # Public craftsmen pages
+│   └── api/auth/                 # NextAuth API route
+├── components/
+│   ├── layout/                   # Layout components (Header, Navbar, Hero, etc.)
+│   ├── features/auth/            # Auth feature components
+│   ├── features/craftsman/       # Craftsman feature components
+│   └── ui/                       # Reusable UI components
+├── hooks/                        # Custom hooks (useAuth, useCraftsman, useClient)
+├── services/                     # API service layer
+├── lib/                          # Configuration (axios, nextAuth, queryClient)
+├── providers/                    # React providers (NextAuth, React Query)
+├── store/                        # Zustand store
+├── types/                        # TypeScript type definitions
+└── utils/                        # Helper utilities
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🚀 Getting Started
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Prerequisites
+- Node.js 18+
+- npm
 
-## Learn More
+### Installation & Development
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+# Install dependencies
+npm install
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Start development server
+npm run dev
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Build for production
+npm run build
 
-## Deploy on Vercel
+# Start production server
+npm start
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# Lint code
+npm run lint
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Environment Variables
+
+Create a `.env` file in the project root:
+
+```env
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_API_BASE_URL=https://tasklyqu.runasp.net/
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your-nextauth-secret
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+FACEBOOK_CLIENT_ID=your-facebook-client-id
+FACEBOOK_CLIENT_SECRET=your-facebook-client-secret
+```
+
+---
+
+## 🌐 API
+
+The platform connects to an external API (`tasklyqu.runasp.net`) for all data operations:
+
+- **Auth:** Registration, login, email verification, password reset
+- **Craftsmen:** Create/update portfolio, list craftsmen, show phone number
+- **Clients:** View contact requests, update request status
+- **Control:** Skills and categories management
+
+---
+
+## 📄 License
+
+This is a private project.

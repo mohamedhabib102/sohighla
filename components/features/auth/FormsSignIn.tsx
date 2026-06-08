@@ -12,12 +12,14 @@ import { useSignIn } from "@/hooks/auth/useAuth";
 import toast from "react-hot-toast";
 import { useAuthStore } from "@/store/auth-store";
 import { User } from "@/types/stores";
+import { useRouter } from "next/navigation";
 
 
 const FormsSignIn = () => {
 
   const { mutate: signInMutate, isLoading } = useSignIn();
-    const {user, login} =  useAuthStore()
+  const { login} =  useAuthStore()
+  const router = useRouter()
 
 
 
@@ -44,7 +46,8 @@ const FormsSignIn = () => {
         isVerifyEmail: res.isVerifyEmail,
         accessToken: res.accessToken,
       }
-      login(userData)
+      login(userData);
+      router.push("/")
      }
   return (
     <div className="w-full max-w-[600px] mx-auto p-6 md:p-14 flex flex-col justify-center min-h-screen">
@@ -85,7 +88,7 @@ const FormsSignIn = () => {
             <input type="checkbox" id="remember" className="w-4 h-4" />
             <label htmlFor="remember" className="text-sm text-gray-600">تذكرني</label>
           </div>
-          <Link href="/forgot-password" className="text-[#EA580C] text-sm font-semibold">
+          <Link href="/auth/forgot-password" className="text-[#EA580C] text-sm font-semibold">
             نسيت كلمة المرور؟
           </Link>
         </div>

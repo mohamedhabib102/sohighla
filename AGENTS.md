@@ -1,5 +1,8 @@
-<!-- BEGIN:nextjs-agent-rules -->
-# This is NOT the Next.js you know
+# Agent Rules
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
-<!-- END:nextjs-agent-rules -->
+- Use Next.js App Router (app/ directory)
+- Use React Server Components by default
+- Use client components only when needed ("use client")
+- Use TypeScript
+- Prefer simple, stable implementations
+- Do not assume experimental or custom framework changes

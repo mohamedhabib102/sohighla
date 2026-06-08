@@ -5,6 +5,7 @@ export interface LINKSARRAY {
     label: string;
     href: string;
     icon?: IconType
+    type?: "customer"|"craftsman"
 }
 
 
@@ -54,15 +55,41 @@ export interface resetPasswordType {
 }
 
 export interface CraftsmanType {
+    personID: number,
     craftsmanID: number,
     firstName: string,
     lastName?: string,
     profileImageURL: string,
     shortDescription: string,
+    locationText: string,
     averageRating: number,
     totalRatings: number,
-    category?: {
-        categoryID: number,
-        categoryName: string
-    }
+}
+
+export interface CraftsmanByCategoryType {
+    personID: number,
+    craftsmanID: number,
+    firstName: string,
+    lastName: string,
+    profileImageURL: string,
+    shortDescription: string,
+    locationText: string,
+    averageRating: number,
+    totalRatings: number
+}
+
+
+
+export interface allRequetsType {
+    requestID: number,
+    fullName: string,
+    profileImageURL: string,
+    status: number,
+    createdAt: string
+} 
+
+
+export interface updateReqStatusType {
+    requestId: number;
+    status: number;
 }

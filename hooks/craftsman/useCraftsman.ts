@@ -1,7 +1,7 @@
 import { QueryKeys } from "@/lib/query-keys"
 import { queryClient } from "@/lib/queryClient"
-import { createCraftsman, deletImageById, getCraftsmanById, updateCraftsman, addWorkImages, getShowPhone, updatePhoneNumber, getAllCraftsmen } from "@/services/craftsman/craftsmane.service"
-import { CraftsmanType, PortfolioType } from "@/types"
+import { createCraftsman, deletImageById, getCraftsmanById, updateCraftsman, addWorkImages, getShowPhone, updatePhoneNumber, getAllCraftsmen, getCraftsmenByCategory } from "@/services/craftsman/craftsmane.service"
+import { CraftsmanByCategoryType, CraftsmanType, PortfolioType } from "@/types"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { AxiosError } from "axios"
 import toast from "react-hot-toast"
@@ -167,16 +167,30 @@ const useUpdatePhoneNumber = () => {
 }
 
 
-const useGetAllCraftsmen = (initialData?: any) => {
+const useGetAllCraftsmen = () => {
     const query = useQuery<CraftsmanType[]>({
         queryKey: QueryKeys.craftsman,
-        queryFn: getAllCraftsmen,
-        initialData
+        queryFn: getAllCraftsmen
     })
 
     return {
         data: query.data,
         isLoading: query.isLoading,
+        isError: query.isError,
+        error: query.error
+    }
+}
+
+const useGetCraftsmenByCategory = (CategoryID: number) => {
+    const query = useQuery<CraftsmanByCategoryType[]>({
+        queryKey: QueryKeys.getCraftsmenByCategory(CategoryID),
+        queryFn: () => getCraftsmenByCategory(CategoryID),
+        enabled: !!CategoryID
+    })
+
+    return {
+        data: query.data,
+        loading: query.isLoading,
         isError: query.isError,
         error: query.error
     }
@@ -191,5 +205,6 @@ export {
     useAddWorkImages,
     useShowPhone,
     useUpdatePhoneNumber,
-    useGetAllCraftsmen
+    useGetAllCraftsmen,
+    useGetCraftsmenByCategory
 }

@@ -12,6 +12,7 @@ import {
 } from "react-icons/fi";
 import LoadingComponent from "@/components/ui/LoadingComponent";
 import ErrorComponent from "@/components/ui/ErrorComponent";
+import { useAuthStore } from "@/store/auth-store";
 
 interface CraftsmanDetailClientProps {
   craftsmanId: number;
@@ -21,6 +22,10 @@ const CraftsmanDetailClient = ({ craftsmanId }: CraftsmanDetailClientProps) => {
   const { data, isLoading, isError } = useCraftsmanById(craftsmanId);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isGettingPhone, setIsGettingPhone] = useState(false);
+  const {user} = useAuthStore()
+
+
+  console.log(user)
 
   const handleShowPhone = async () => {
     if (!data) return;

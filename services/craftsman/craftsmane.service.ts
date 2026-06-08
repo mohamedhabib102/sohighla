@@ -70,6 +70,11 @@ const getAllCraftsmen = async () => {
 } 
 
 
+const getCraftsmenByCategory = async (CategoryID: number) => {
+    const res =  await axiosInstance.get(`/GetCraftsmenByCategory?CategoryID=${CategoryID}`)
+    return res.data.data
+}
+
 export 
 {
 createCraftsman,
@@ -79,5 +84,6 @@ deletImageById,
 addWorkImages,
 getShowPhone,
 updatePhoneNumber,
-getAllCraftsmen
+getAllCraftsmen,
+getCraftsmenByCategory
 }

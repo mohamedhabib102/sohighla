@@ -36,7 +36,7 @@ const VerifyEmailForm = () => {
     try {
       await resentOTP(email)
       setIsLoading(false);
-      router.push(`/dashboard-craftsman/verify-code?email=${encodeURIComponent(email)}`);
+      router.push(`/auth/verify-code?email=${encodeURIComponent(email)}`);
     } catch (error) {
       console.log(error)
       toast.error("حدث خطأ يرجى المحاولة مرة اخرى يمكنك عمل تحديث للصفحة ");
