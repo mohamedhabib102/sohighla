@@ -9,7 +9,7 @@ const getAllSkills = async () => {
 }
 
 const createSkill =  async (name: string) => {
-    const res = await axiosInstance.post("/CreateSkill", { skillName: name })
+    const res = await axiosInstance.post("/AddSkill", { skillName: name })
     return res.data
 }
 
@@ -24,10 +24,28 @@ const getAllCategory = async () => {
     return res.data.data
 }
 
+const getAllPersons = async () => {
+    const res = await axiosInstance.get("/GetAllPersons")
+    return res.data.data
+}
+
+const changeRole = async (personId: number, role: string) => {
+    const res = await axiosInstance.put("/ChangeRole", null, {
+        params: {
+            personId,
+            role
+        }
+    })
+    return res.data
+}
+
 export {
     getAllSkills,
     createSkill,
     createCategory,
-    getAllCategory
+    getAllCategory,
+    getAllPersons,
+    changeRole
 }
+
 

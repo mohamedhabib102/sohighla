@@ -315,8 +315,8 @@ const ProfileCraftsman = () => {
           <article className="bg-white p-7 rounded-xl border border-gray-100 shadow-sm space-y-8">
             <h3 className="text-lg font-bold text-secondary">تقييمات العملاء</h3>
             <div className="space-y-6">
-              {craftsman.comments?.length > 0 ? (
-                  craftsman.comments.map((rev, index) => (
+              {craftsman.ratings?.length > 0 ? (
+                  craftsman.ratings.map((rev, index) => (
                     <div key={index} className="space-y-3 pb-6 border-b border-gray-50 last:border-0 last:pb-0">
                     <div className="flex justify-between items-start">
                         <div className="flex items-center gap-3">
@@ -325,21 +325,26 @@ const ProfileCraftsman = () => {
                         </div>
                         <div>
                             <p className="font-bold text-secondary text-xs">{rev.personName}</p>
-                            <div className="flex items-center gap-1 mt-0.5 text-yellow-400">
-                            {[...Array(5)].map((_, i) => <FiStar key={i} size={10} className="fill-current" />)}
+                            <div className="flex items-center gap-1 mt-0.5">
+                            {[...Array(5)].map((_, i) => (
+                              <FiStar 
+                                key={i} 
+                                size={10} 
+                                className={i < rev.rate ? "text-yellow-400 fill-yellow-400" : "text-gray-200"} 
+                              />
+                            ))}
                             </div>
                         </div>
                         </div>
                         <span className="text-[10px] text-gray-400 bg-gray-50 px-2 py-0.5 rounded-full font-bold">{new Date(rev.createdAt).toLocaleDateString("ar-EG")}</span>
                     </div>
-                    <p className="text-gray-500 text-xs leading-relaxed pr-2 border-r-2 border-gray-50">{rev.commentText}</p>
+                    <p className="text-gray-500 text-xs leading-relaxed pr-2 border-r-2 border-gray-50">{rev.ratingMessage}</p>
                     </div>
                   ))
               ) : (
                 <p className="text-gray-400 text-sm italic text-center py-4">لا توجد تقييمات بعد.</p>
               )}
             </div>
-            <button className="w-full py-3 rounded-xl border border-gray-100 text-gray-400 text-xs font-bold hover:bg-gray-50">قراءة كافة التقييمات</button>
           </article>
 
         </div>

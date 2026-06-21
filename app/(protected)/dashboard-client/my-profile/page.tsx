@@ -1,6 +1,5 @@
 "use client";
 
-import Header from "@/components/layout/Header";
 import CustomContainer from "@/components/ui/CustomContainer";
 import { useAuthStore } from "@/store/auth-store";
 import Link from "next/link";
@@ -13,7 +12,6 @@ const MyProfile = () => {
   if (!user) {
     return (
       <>
-        <Header />
         <section className="min-h-screen bg-gray-50 flex items-center justify-center">
           <div className="text-center">
             <p className="text-gray-600 text-lg mb-4">يجب تسجيل الدخول أولاً</p>
@@ -30,7 +28,6 @@ const MyProfile = () => {
 
   return (
     <>
-      <Header />
 
       <section className="min-h-screen py-12 bg-gray-50">
         <CustomContainer>

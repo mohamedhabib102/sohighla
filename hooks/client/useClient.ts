@@ -1,6 +1,6 @@
 import { QueryKeys } from "@/lib/query-keys"
-import { getAllRequests, updateRequestStatus } from "@/services/client/client.service"
-import { allRequetsType } from "@/types";
+import { getAllRequests, updateRequestStatus, getAllRequestsByClient, addRating } from "@/services/client/client.service"
+import { allRequetsType, ClientRequestType } from "@/types";
 import { useQuery , useMutation, useQueryClient} from "@tanstack/react-query"
 import { AxiosError } from "axios"
 import toast from "react-hot-toast";
@@ -29,7 +29,10 @@ export const useUpdateReqStatus = () => {
             toast.success(" تم تحديث حالة الطلب بنجاح ");
             queryClient.invalidateQueries({
                 queryKey: QueryKeys.getAllRequests
-            })
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["client-requests"]
+            });
         },
         onError: (error: unknown) => {
            const err =  error as AxiosError;
@@ -46,3 +49,48 @@ export const useUpdateReqStatus = () => {
         error: Req.error,
     }
 }
+
+export const useClientRequests = (clientId?: number) => {
+    const request = useQuery<ClientRequestType[]>({
+        queryFn: () => getAllRequestsByClient(clientId!),
+        queryKey: ["client-requests", clientId],
+        enabled: !!clientId
+    });
+
+    return {
+        requests: request.data,
+        loading: request.isLoading,
+        error: request.error,
+        isError: request.isError
+    }
+}
+
+export const useAddRating = () => {
+    const queryClient = useQueryClient();
+    const Req = useMutation({
+        mutationFn: addRating,
+        onSuccess: () => {
+            toast.success("تم إضافة التقييم بنجاح");
+            queryClient.invalidateQueries({
+                queryKey: ["craftsman"]
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["client-requests"]
+            });
+        },
+        onError: (error: unknown) => {
+            const err = error as AxiosError;
+            if (err.response?.status === 400) {
+                toast.error("فشل إضافة التقييم، الرجاء التأكد من البيانات أو أنك قمت بالتقييم مسبقاً");
+            } else {
+                toast.error("حدث خطأ بالخادم يرجى المحاولة مرة اخرى");
+            }
+        }
+    });
+
+    return {
+        addRatingMutate: Req.mutateAsync,
+        loading: Req.isPending,
+        error: Req.error,
+    }
+}

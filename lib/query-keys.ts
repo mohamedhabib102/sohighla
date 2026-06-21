@@ -8,5 +8,6 @@ export const QueryKeys = {
     getCraftsmenByCategory: (CategoryID: number) => ["craftsmen-by-category", CategoryID],
     getAllSkills: ["skills"],
     getAllCategory: ["categories"],
-    getAllRequests: ["request"]
+    getAllRequests: ["request"],
+    getAllPersons: ["persons"]
 }

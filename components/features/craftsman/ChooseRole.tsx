@@ -91,6 +91,18 @@ const ChooseRoleContent = () => {
     }, [])
     return (
     <div className="w-full max-w-5xl mx-auto px-4 rtl" dir="rtl">
+
+      {/* Back Button */}
+      <button
+        onClick={() => router.back()}
+        className="flex items-center gap-2 text-gray-500 hover:text-secondary transition-colors text-sm font-medium mb-10 group"
+      >
+        <span className="w-8 h-8 rounded-full bg-gray-100 group-hover:bg-gray-200 flex items-center justify-center transition-colors">
+          <HiArrowLeft className="rotate-180 text-base" />
+        </span>
+        <span>العودة للخلف</span>
+      </button>
+
       {/* Progress Bar */}
       <div className="flex items-center justify-center mb-16 relative">
         <div className="flex items-center w-full max-w-2xl relative">

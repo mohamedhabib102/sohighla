@@ -11,6 +11,7 @@ import { BsInfoCircleFill } from "react-icons/bs";
 import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/auth-store";
 import { MdSpaceDashboard } from "react-icons/md";
+import { getToken } from "@/lib/getToken";
 
 const LINKS_CLIENT:LINKSARRAY[] = [
   {
@@ -73,6 +74,9 @@ const LINKS_DASHBOARD_CLIENT:LINKSARRAY[] = [
 const Header = () => {
  const pathname =  usePathname();
  const {user} = useAuthStore()
+ const  token = getToken();
+
+ console.log(token)
 
  const filteredLinks = LINKS_CLIENT.filter(link => {
    if (link.type === "customer") {

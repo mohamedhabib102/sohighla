@@ -1,6 +1,5 @@
 import React from "react";
 import { Metadata } from "next";
-import Header from "@/components/layout/Header";
 import CraftsmanDetailClient from "@/components/features/craftsman/CraftsmanDetailClient";
 import { getCraftsmanById } from "@/services/craftsman/craftsmane.service";
 
@@ -76,7 +75,6 @@ const CraftsmanServerDetailPage = async ({ params }: PageProps) => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col" dir="rtl">
-      <Header />
 
       <main className="grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
         <CraftsmanDetailClient 

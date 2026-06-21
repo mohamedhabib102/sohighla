@@ -4,8 +4,8 @@ import "./globals.css";
 import ProviderReactQuery from "@/providers/providerReactQuery";
 import { Toaster} from 'react-hot-toast';
 import NextAuthProvider from "@/providers/ProviderNextauth";
-
-
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
 
 const tajawal = Tajawal({
   variable: "--font-tajawal",
@@ -18,10 +18,6 @@ const lemonada = Lemonada({
   subsets: ["arabic"],
   weight: ["300", "400", "500", "600", "700"],
 });
-
-
-
-
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://sohighla.vercel.app"),
@@ -69,17 +65,22 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <NextAuthProvider>
-        <ProviderReactQuery>
-          <Toaster 
-           toastOptions={{
-            duration: 3000,
-            position: "top-left",
-           }}
-          />
-          {children}
-        </ProviderReactQuery>
+          <ProviderReactQuery>
+            <Toaster 
+              toastOptions={{
+                duration: 3000,
+                position: "top-left",
+              }}
+            />
+            <Header />
+            <main className="flex-1">
+              {children}
+            </main>
+            <Footer />
+          </ProviderReactQuery>
         </NextAuthProvider>
       </body>
     </html>
   );
 }
+

@@ -13,6 +13,9 @@ import {
 import LoadingComponent from "@/components/ui/LoadingComponent";
 import ErrorComponent from "@/components/ui/ErrorComponent";
 import { useAuthStore } from "@/store/auth-store";
+import { useAddRating } from "@/hooks/client/useClient";
+import toast from "react-hot-toast";
+import { IoClose } from "react-icons/io5";
 
 interface CraftsmanDetailClientProps {
   craftsmanId: number;
@@ -22,7 +25,34 @@ const CraftsmanDetailClient = ({ craftsmanId }: CraftsmanDetailClientProps) => {
   const { data, isLoading, isError } = useCraftsmanById(craftsmanId);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isGettingPhone, setIsGettingPhone] = useState(false);
-  const {user} = useAuthStore()
+  const { user } = useAuthStore();
+  const { addRatingMutate, loading: ratingLoading } = useAddRating();
+
+  const [userRating, setUserRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [ratingMessage, setRatingMessage] = useState("");
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+
+  const handleRatingSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (userRating === 0) {
+      toast.error("يرجى اختيار التقييم بالنجوم أولاً");
+      return;
+    }
+    try {
+      await addRatingMutate({
+        craftsmanID: craftsmanId,
+        rate: userRating,
+        ratingMessage: ratingMessage.trim()
+      });
+      setUserRating(0);
+      setRatingMessage("");
+    } catch (err) {
+      // Toast error is handled inside the hook
+    }
+  };
+
 
 
   console.log(user)
@@ -34,6 +64,11 @@ const CraftsmanDetailClient = ({ craftsmanId }: CraftsmanDetailClientProps) => {
     try {
       const { getShowPhone } = await import("@/services/craftsman/craftsmane.service");
       const fetchedPhone = await getShowPhone(craftsman.craftsmanID);
+      if (!fetchedPhone) {
+        toast.error("عذراً، لم يتم العثور على رقم الهاتف او لم يتم تفعيل عرض الهاتف من قبل الحرفي");
+        setIsGettingPhone(false);
+        return;
+      }
       setPhoneNumber(fetchedPhone);
     } catch (err) {
       console.error("Failed to load phone number:", err);
@@ -57,7 +92,7 @@ const CraftsmanDetailClient = ({ craftsmanId }: CraftsmanDetailClientProps) => {
       
       {/* 1. Header Section (Exact Profile Style) */}
       <article className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden pb-6">
-        <div className="relative w-full aspect-3/1 max-h-[400px]">
+        <div className="relative w-full aspect-3/1 max-h-100">
             <Image src={craftsman.bannerImageURL || "/imgs/banner.png"} 
             alt="banner" 
             fill 
@@ -222,8 +257,12 @@ const CraftsmanDetailClient = ({ craftsmanId }: CraftsmanDetailClientProps) => {
             {craftsman.workImages && craftsman.workImages.length > 0 ? (
               <div className="grid grid-cols-3 gap-4">
                 {craftsman.workImages.map((img, i) => (
-                  <div key={i} className="relative aspect-square rounded-2xl overflow-hidden border border-gray-50 shadow-sm group">
-                    <Image src={img.imageURL} alt="work" fill className="object-cover group-hover:scale-105 transition-transform" />
+                  <div 
+                    key={i} 
+                    onClick={() => setSelectedImage(img.imageURL)}
+                    className="relative aspect-square rounded-2xl overflow-hidden border border-gray-50 shadow-sm group cursor-pointer"
+                  >
+                    <Image src={img.imageURL} alt="work" fill className="object-cover group-hover:scale-105 transition-transform duration-250" />
                   </div>
                 ))}
               </div>
@@ -240,8 +279,8 @@ const CraftsmanDetailClient = ({ craftsmanId }: CraftsmanDetailClientProps) => {
           <article className="bg-white p-7 rounded-xl border border-gray-100 shadow-sm space-y-8">
             <h3 className="text-lg font-bold text-secondary">تقييمات العملاء</h3>
             <div className="space-y-6">
-              {craftsman.comments && craftsman.comments.length > 0 ? (
-                  craftsman.comments.map((rev, index) => (
+              {craftsman.ratings && craftsman.ratings.length > 0 ? (
+                  craftsman.ratings.map((rev, index) => (
                     <div key={index} className="space-y-3 pb-6 border-b border-gray-50 last:border-0 last:pb-0">
                     <div className="flex justify-between items-start">
                         <div className="flex items-center gap-3">
@@ -250,28 +289,121 @@ const CraftsmanDetailClient = ({ craftsmanId }: CraftsmanDetailClientProps) => {
                         </div>
                         <div>
                             <p className="font-bold text-secondary text-xs">{rev.personName}</p>
-                            <div className="flex items-center gap-1 mt-0.5 text-yellow-400">
-                            {[...Array(5)].map((_, i) => <FiStar key={i} size={10} className="fill-current" />)}
+                            <div className="flex items-center gap-1 mt-0.5">
+                            {[...Array(5)].map((_, i) => (
+                              <FiStar 
+                                key={i} 
+                                size={10} 
+                                className={i < rev.rate ? "text-yellow-400 fill-yellow-400" : "text-gray-200"} 
+                              />
+                            ))}
                             </div>
                         </div>
                         </div>
                         <span className="text-[10px] text-gray-400 bg-gray-50 px-2 py-0.5 rounded-full font-bold">{new Date(rev.createdAt).toLocaleDateString("ar-EG")}</span>
                     </div>
-                    <p className="text-gray-500 text-xs leading-relaxed pr-2 border-r-2 border-gray-50">{rev.commentText}</p>
+                    <p className="text-gray-500 text-sm leading-relaxed pr-2 border-r-2 border-gray-50">{rev.ratingMessage}</p>
                     </div>
                   ))
               ) : (
                 <p className="text-gray-400 text-sm italic text-center py-4">لا توجد تقييمات بعد.</p>
               )}
             </div>
-            {craftsman.comments && craftsman.comments.length > 0 && (
-              <button className="w-full py-3 rounded-xl border border-gray-100 text-gray-400 text-xs font-bold hover:bg-gray-50">قراءة كافة التقييمات</button>
+            {/* Add Rating Form */}
+            {user && (
+              <div className="mt-8 pt-8 border-t border-gray-100 text-right" dir="rtl">
+                <h4 className="text-sm font-bold text-secondary mb-4 flex items-center justify-start gap-2 flex-row-reverse">
+                  <span>أضف تقييمك للحرفي</span>
+                  <FiStar className="text-primary fill-primary" size={16} />
+                </h4>
+                <form onSubmit={handleRatingSubmit} className="space-y-4">
+                  <div className="flex flex-col items-start gap-2">
+                    <span className="text-xs text-gray-400 font-bold">تقييمك بالنجوم:</span>
+                    <div className="flex gap-1" dir="ltr">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button
+                          key={star}
+                          type="button"
+                          onClick={() => setUserRating(star)}
+                          onMouseEnter={() => setHoverRating(star)}
+                          onMouseLeave={() => setHoverRating(0)}
+                          className="cursor-pointer transition-transform hover:scale-110 p-0.5 focus:outline-hidden"
+                        >
+                          <FiStar
+                            size={24}
+                            className={`${
+                              (hoverRating || userRating) >= star
+                                ? "text-yellow-400 fill-yellow-400"
+                                : "text-gray-300"
+                            } transition-colors duration-150`}
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 text-right">
+                    <label htmlFor="craftsman-feedback" className="text-xs text-gray-400 font-bold block">
+                      اكتب تعليقك:
+                    </label>
+                    <textarea
+                      id="craftsman-feedback"
+                      rows={3}
+                      value={ratingMessage}
+                      onChange={(e) => setRatingMessage(e.target.value)}
+                      placeholder="اكتب هنا تجربتك ورأيك في أداء هذا الحرفي..."
+                      className="w-full rounded-xl border border-gray-200 p-3 text-xs focus:outline-hidden focus:ring-2 focus:ring-primary focus:border-transparent resize-none leading-relaxed text-secondary text-right"
+                    />
+                  </div>
+
+                  <div className="flex justify-end">
+                    <button
+                      type="submit"
+                      disabled={ratingLoading}
+                      className="bg-secondary hover:bg-secondary/95 text-white font-bold py-2.5 px-6 rounded-xl text-xs transition-colors cursor-pointer disabled:opacity-70"
+                    >
+                      {ratingLoading ? "جاري الإرسال..." : "إرسال التقييم"}
+                    </button>
+                  </div>
+                </form>
+              </div>
             )}
           </article>
 
         </div>
 
       </div>
+
+      {/* Image Lightbox Modal */}
+      {selectedImage && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-xs p-4 animate-in fade-in duration-200"
+          onClick={() => setSelectedImage(null)}
+        >
+          <div className="relative max-w-4xl max-h-[90vh] w-full h-full flex items-center justify-center">
+            <button 
+              type="button"
+              onClick={() => setSelectedImage(null)}
+              className="absolute top-4 right-4 bg-white/20 hover:bg-white/35 text-white p-2 rounded-full transition-colors cursor-pointer z-10 flex items-center justify-center"
+            >
+              <IoClose size={24} />
+            </button>
+            <div 
+              className="relative w-full h-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Image 
+                src={selectedImage} 
+                alt="Work Image Full Screen" 
+                fill 
+                className="object-contain"
+                sizes="(max-w-4xl) 100vw, 80vw"
+                priority
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };

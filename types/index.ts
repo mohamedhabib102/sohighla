@@ -33,8 +33,9 @@ export interface PortfolioType {
         skillID: number,
         skillName: string
     }[],
-    comments: {
-        commentText: string,
+    ratings: {
+        rate: number,
+        ratingMessage: string,
         personName: string,
         createdAt: string
     }[],
@@ -64,6 +65,7 @@ export interface CraftsmanType {
     locationText: string,
     averageRating: number,
     totalRatings: number,
+    categoryName: string;
 }
 
 export interface CraftsmanByCategoryType {
@@ -93,3 +95,47 @@ export interface updateReqStatusType {
     requestId: number;
     status: number;
 }
+
+export interface PersonType {
+    personID: number;
+    firstName: string;
+    lastName: string;
+    phoneNumber?: string;
+    email: string;
+    role: string;
+}
+
+export interface CategoryType {
+    categoryID: number;
+    categoryName: string;
+}
+
+export interface SkillType {
+    skillID: number;
+    skillName: string;
+}
+
+
+export interface ClientRequestType {
+    requestID: number;
+    clientID: number;
+    craftsmanID: number;
+    completedAt: string;
+    requestTitle: string | null;
+    requestDescription: string | null;
+    createdAt: string;
+    status: number;
+    profileImageUrl: string | null;
+    firstName: string;
+    lastName: string;
+    phoneNumber: string | null;
+    email: string;
+}
+
+export interface AddRatingPayload {
+    craftsmanID: number;
+    rate: number;
+    ratingMessage: string;
+}
+
+

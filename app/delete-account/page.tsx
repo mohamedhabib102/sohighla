@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Header from "@/components/layout/Header";
 import CustomContainer from "@/components/ui/CustomContainer";
 import { HiOutlineTrash, HiOutlineExclamationTriangle, HiOutlineShieldCheck, HiOutlineEnvelope } from "react-icons/hi2";
 
@@ -20,7 +19,6 @@ export const metadata: Metadata = {
 export default function DeleteAccount() {
   return (
     <>
-      <Header />
 
       {/* Hero */}
       <section className="min-h-[50vh] relative py-12 lg:py-20 flex items-center justify-center bg-gradient-to-br from-secondary to-secondary/90">

@@ -81,7 +81,7 @@ export default function HowItWorks() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <Header />
+
       
       {/* Hero Section */}
       <section className="min-h-[60vh] relative py-12 lg:py-20 flex items-center justify-center bg-gradient-to-br from-secondary to-secondary/90">

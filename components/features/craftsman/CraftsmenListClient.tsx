@@ -1,22 +1,37 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { useGetAllCraftsmen, useGetCraftsmenByCategory } from "@/hooks/craftsman/useCraftsman";
 import { useGetAllCategory } from "@/hooks/control/useConrtol";
 import { HiOutlineStar, HiOutlineBriefcase, HiOutlineMapPin } from "react-icons/hi2";
 import { FiLoader, FiFilter, FiSearch } from "react-icons/fi";
+import { IoClose } from "react-icons/io5";
 import { motion } from "framer-motion";
 import { CraftsmanType, CraftsmanByCategoryType } from "@/types";
 
 const CraftsmenListClient = () => {
+  const searchParams = useSearchParams();
   const { data: craftsmenList, isLoading: isLoadingAll } = useGetAllCraftsmen();
   const { data: categories, isLoading: isLoadingCategories } = useGetAllCategory();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<number>(0);
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const { data: craftsmenByCategory, loading: loadingByCategory } = useGetCraftsmenByCategory(selectedCategories);
+
+  // Pre-apply category filter if URL has ?category=ID (coming from /services or home)
+  useEffect(() => {
+    const catParam = searchParams.get("category");
+    if (catParam) {
+      const id = Number(catParam);
+      if (!isNaN(id) && id > 0) {
+        setSelectedCategories(id);
+      }
+    }
+  }, [searchParams]);
 
   const handleCategoryToggle = (id: number) => {
     if (id !== 0) {
@@ -29,17 +44,30 @@ const CraftsmenListClient = () => {
   };
 
   const displayCraftsmen: (CraftsmanType | CraftsmanByCategoryType)[] = useMemo(() => {
-    let list =
+    let list: (CraftsmanType | CraftsmanByCategoryType)[] =
       selectedCategories !== 0 && craftsmenByCategory
         ? craftsmenByCategory
         : craftsmenList || [];
 
     if (searchTerm.trim()) {
       const term = searchTerm.trim().toLowerCase();
-      list = list.filter(
-        (craftsman: any) =>
-          craftsman.category?.categoryName?.toLowerCase().includes(term)
-      );
+      list = list.filter((craftsman: any) => {
+        const categoryName = craftsman.categoryName?.toLowerCase() || "";
+        const shortDescription = craftsman.shortDescription?.toLowerCase() || "";
+        const skillName = craftsman.skillName || "";
+        
+        const matchesBasic = 
+          categoryName.includes(term) || 
+          shortDescription.includes(term);
+
+        const skillsArray = typeof skillName === "string" 
+          ? skillName.split(",").map(s => s.trim().toLowerCase()) 
+          : [];
+
+        const matchesSkills = skillsArray.some(s => s.includes(term));
+
+        return matchesBasic || matchesSkills;
+      });
     }
 
     return list;
@@ -68,26 +96,35 @@ const CraftsmenListClient = () => {
         </p>
       </header>
 
-      <section className="mb-8">
+      <section className="mb-8 flex gap-3 items-center justify-start flex-row-reverse">
         <div className="relative w-full md:max-w-md">
           <input 
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="ابحث بالاسم، المهنة، أو الكلمات الدلالية..."
-            className="w-full bg-white border border-gray-200 text-gray-800 text-sm rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary block p-3 pr-10 outline-none transition-all shadow-sm font-sans"
+            className="w-full bg-white border border-gray-200 text-gray-800 text-sm rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary block p-3 pr-10 outline-none transition-all shadow-sm font-sans text-right"
           />
           <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
             <FiSearch className="w-5 h-5 text-gray-400" />
           </div>
         </div>
+
+        <button
+          type="button"
+          onClick={() => setIsMobileFilterOpen(true)}
+          className="lg:hidden flex items-center gap-2 bg-white border border-gray-200 text-secondary hover:text-primary hover:border-primary text-sm font-bold p-3 rounded-xl transition-all shadow-sm cursor-pointer whitespace-nowrap font-sans"
+        >
+          <FiFilter size={18} />
+          <span>تصفية الأصناف</span>
+        </button>
       </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
 
-        <aside className="lg:col-span-1">
+        <aside className="hidden lg:block lg:col-span-1">
           <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
-            <h3 className="text-sm font-bold text-secondary mb-4 pb-3 border-b border-gray-50 flex items-center gap-2">
+            <h3 className="text-sm font-bold text-secondary mb-4 pb-3 border-b border-gray-50 flex items-center gap-2 justify-start flex-row-reverse">
               <FiFilter className="text-primary" />
               <span>تصفية الأصناف</span>
             </h3>
@@ -99,10 +136,10 @@ const CraftsmenListClient = () => {
                   <span>جاري التحميل...</span>
                 </div>
               ) : categories && categories.length > 0 ? (
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-3 text-right">
                   <button
                     onClick={resetFilter}
-                    className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border transition-all text-sm font-bold
+                    className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border transition-all text-sm font-bold cursor-pointer
                       ${selectedCategories === 0
                         ? "bg-primary text-white border-primary"
                         : "bg-gray-50 text-gray-600 border-gray-200 hover:bg-primary hover:text-white hover:border-primary"
@@ -114,7 +151,7 @@ const CraftsmenListClient = () => {
                   {categories.map((cat: any) => (
                     <label
                       key={cat.categoryID}
-                      className="flex items-center gap-3 cursor-pointer group"
+                      className="flex items-center gap-3 cursor-pointer group justify-start flex-row-reverse"
                     >
                       <input
                         type="checkbox"
@@ -190,7 +227,7 @@ const CraftsmenListClient = () => {
 
                       <div className="flex">
                         <span className="bg-primary/5 text-primary text-[10px] font-black px-2.5 py-1 rounded-md border border-orange-100/40">
-                          {getCategoryName(craftsman)}
+                          {craftsman.categoryName}
                         </span>
                       </div>
 
@@ -204,7 +241,7 @@ const CraftsmenListClient = () => {
 
                         <div className="flex items-center gap-2 text-gray-400 text-[11px]">
                           <HiOutlineMapPin className="text-primary text-base shrink-0" />
-                          <span>المملكة العربية السعودية</span>
+                          <span>{craftsman.locationText || "غير محدد"}</span>
                         </div>
                       </div>
                     </div>
@@ -225,10 +262,82 @@ const CraftsmenListClient = () => {
                 <p className="text-gray-400 font-bold text-xs sm:text-sm">لم يتم العثور على حرفيين يطابقون خيارات البحث.</p>
               </div>
             )}
-          </div>
+            </div>
         </section>
-
       </div>
+
+      {/* Mobile Filter Modal */}
+      {isMobileFilterOpen && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-xs p-4 animate-in fade-in duration-200">
+          <div 
+            className="bg-white rounded-t-2xl sm:rounded-2xl max-w-md w-full shadow-2xl overflow-hidden border border-gray-100 animate-in slide-in-from-bottom sm:zoom-in-95 duration-200 text-right"
+            dir="rtl"
+          >
+            {/* Header */}
+            <div className="flex justify-between items-center bg-gray-50 p-4 border-b border-gray-100">
+              <h3 className="text-sm font-bold text-secondary flex items-center gap-2 justify-start flex-row-reverse">
+                <FiFilter className="text-primary" />
+                <span>تصفية الأصناف</span>
+              </h3>
+              <button 
+                type="button"
+                onClick={() => setIsMobileFilterOpen(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-lg hover:bg-gray-100 cursor-pointer"
+              >
+                <IoClose size={18} />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-5 max-h-[60vh] overflow-y-auto space-y-4">
+              {isLoadingCategories ? (
+                <div className="flex items-center justify-center gap-2 text-gray-400 text-xs font-bold py-8">
+                  <FiLoader className="animate-spin text-primary" />
+                  <span>جاري التحميل...</span>
+                </div>
+              ) : categories && categories.length > 0 ? (
+                <div className="flex flex-col gap-4 text-right">
+                  <button
+                    onClick={() => {
+                      resetFilter();
+                      setIsMobileFilterOpen(false);
+                    }}
+                    className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl border transition-all text-sm font-bold cursor-pointer
+                      ${selectedCategories === 0
+                        ? "bg-primary text-white border-primary"
+                        : "bg-gray-50 text-gray-600 border-gray-200 hover:bg-primary hover:text-white hover:border-primary"
+                      }`}
+                  >
+                    <FiFilter className="text-base" />
+                    الكل
+                  </button>
+                  {categories.map((cat: any) => (
+                    <label
+                      key={cat.categoryID}
+                      className="flex items-center gap-3 cursor-pointer group justify-start flex-row-reverse py-1.5 border-b border-gray-50 last:border-0"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedCategories === Number(cat.categoryID)}
+                        onChange={() => {
+                          handleCategoryToggle(Number(cat.categoryID));
+                          setIsMobileFilterOpen(false);
+                        }}
+                        className="w-4 h-4 text-primary bg-gray-50 border-gray-300 rounded cursor-pointer"
+                      />
+                      <span className="text-sm font-medium text-gray-600 group-hover:text-primary transition-colors">
+                        {cat.categoryName}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs text-gray-400 italic text-center py-4">لا توجد تصنيفات حالياً</p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
