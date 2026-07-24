@@ -9,6 +9,12 @@ import { QueryKeys } from "@/lib/query-keys";
 import { useAuthStore } from "@/store/auth-store";
 import toast from "react-hot-toast";
 
+
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_VIDEO_SIZE = 100 * 1024 * 1024; // 100MB
+const MAX_VIDEO_DURATION_SECS = 15 * 60; // 15 minutes
+
+
 interface CreatePortfolioFormProps {
   onSuccess: () => void;
 }
@@ -29,6 +35,24 @@ function validateImageDimensions(file: File): Promise<{ w: number; h: number }> 
   });
 }
 
+function validateVideoDuration(file: File): Promise<number> {
+  return new Promise((resolve, reject) => {
+    const video = document.createElement("video");
+    video.preload = "metadata";
+    video.src = URL.createObjectURL(file);
+    video.onloadedmetadata = () => {
+      URL.revokeObjectURL(video.src);
+      resolve(video.duration);
+    };
+    video.onerror = () => {
+      reject();
+    };
+  });
+}
+
+
+
+
 const CreatePortfolioForm = ({ onSuccess }: CreatePortfolioFormProps) => {
   const { mutate, isLoading: isSubmitting } = useCreateCraftsman();
   const { data: skills, isLoading: isLoadingSkills } = useGetAllSkills();
@@ -44,7 +68,8 @@ const CreatePortfolioForm = ({ onSuccess }: CreatePortfolioFormProps) => {
   const { mutate: createCategoryMutate, isLoading: isCreatingCategory } = useCreateCategory();
   const [isAddingNewCategory, setIsAddingNewCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
-
+ 
+  console.log(`vide default ${MAX_VIDEO_SIZE}`)
   const handleCreateCategory = async () => {
     if (!newCategoryName.trim()) {
       toast.error("يرجى كتابة اسم التخصص أولاً");
@@ -87,20 +112,59 @@ const CreatePortfolioForm = ({ onSuccess }: CreatePortfolioFormProps) => {
       return;
     }
 
+    // Validate file sizes and durations using global constants
+    if (data.ProfileImageURL?.[0]) {
+      if (data.ProfileImageURL[0].size > MAX_IMAGE_SIZE) {
+        toast.error("حجم الصورة الشخصية كبير جداً. الحد الأقصى المسموح به هو 5 ميجابايت.");
+        return;
+      }
+    }
+
     const file = widthRef.current?.files?.[0];
+    if (file) {
+      if (file.size > MAX_IMAGE_SIZE) {
+        toast.error("حجم صورة الغلاف كبير جداً. الحد الأقصى المسموح به هو 5 ميجابايت.");
+        return;
+      }
+    }
+
+    if (data.IntroVideoURL?.[0]) {
+      if (data.IntroVideoURL[0].size > MAX_VIDEO_SIZE) {
+        toast.error("حجم الفيديو التعريفي كبير جداً. يرجى اختيار فيديو بحجم أقل من 100 ميجابايت لضمان الرفع بنجاح.");
+        return;
+      }
+      try {
+        const duration = await validateVideoDuration(data.IntroVideoURL[0]);
+        if (duration > MAX_VIDEO_DURATION_SECS) {
+          toast.error("الفيديو التعريفي طويل جداً. الحد الأقصى المسموح به هو 15 دقيقة.");
+          return;
+        }
+      } catch (error) {
+        toast.error("حدث خطأ أثناء فحص مدة الفيديو، يرجى المحاولة مرة أخرى.");
+        return;
+      }
+    }
+
+    if (data.WorkImages && data.WorkImages.length > 0) {
+      let totalWorkSize = 0;
+      const filesArray = Array.from(data.WorkImages as FileList);
+      for (const f of filesArray) {
+        if (f.size > MAX_IMAGE_SIZE) {
+          toast.error(`حجم الصورة "${f.name}" يتجاوز 5 ميجابايت.`);
+          return;
+        }
+        totalWorkSize += f.size;
+      }
+      if (totalWorkSize > 25 * 1024 * 1024) {
+        toast.error("إجمالي حجم صور معرض الأعمال كبير جداً. يرجى تقليل عدد الصور أو اختيار أحجام أصغر (أقل من 25 ميجابايت إجمالاً).");
+        return;
+      }
+    }
+
     if (file) {
       try {
         const { w, h } = await validateImageDimensions(file);
         
-        // Flexible minimum size (avoiding extremely blurry covers)
-        const MIN_WIDTH = 1200;
-        const MIN_HEIGHT = 400;
-        
-        if (w < MIN_WIDTH || h < MIN_HEIGHT) {
-          toast.error(`أبعاد الغلاف صغيرة جداً. يرجى اختيار صورة بعرض لا يقل عن ${MIN_WIDTH} بكسل وارتفاع لا يقل عن ${MIN_HEIGHT} بكسل.`);
-          return;
-        }
-
         // Horizontal image check
         if (w < h) {
           toast.error("يرجى اختيار صورة عرضية (أفقية) لتناسب تصميم الغلاف.");

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Logo from "@/components/ui/Lgo";
 import CustomContainer from "@/components/ui/CustomContainer";
+import { usePathname } from "next/navigation";
 import {
     HiOutlineHome,
     HiOutlineUsers,
@@ -41,6 +42,16 @@ const SOCIAL = [
 ];
 
 export default function Footer() {
+    const pathname = usePathname();
+
+    if (
+        pathname.startsWith("/dashboard-craftsman") || 
+        pathname.startsWith("/control") ||
+        pathname.startsWith("/auth")
+    ) {
+        return null;
+    }
+
     return (
         <footer className="bg-secondary text-white" dir="rtl">
             {/* ── Top Section ────────────────────────────────────────── */}

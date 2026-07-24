@@ -2,6 +2,7 @@ import  {create} from "zustand";
 import { User, AuthStore } from "../types/stores";
 import { createJSONStorage, persist } from "zustand/middleware";
 import CryptoJS from "crypto-js";
+import { setAuthCookies, clearAuthCookies } from "../utils/auth-cookies";
 
 const SECRET_KEY = "sohighla123";
 
@@ -36,15 +37,21 @@ export const useAuthStore = create<AuthStore>()(
     (set) => ({
       user: null,
 
-      login: (user) =>
+      login: (user) => {
+        if (user.accessToken) {
+          setAuthCookies(user.accessToken, user.role);
+        }
         set({
           user,
-        }),
+        });
+      },
 
-      logout: () =>
+      logout: () => {
+        clearAuthCookies();
         set({
           user: null,
-        }),
+        });
+      },
     }),
     {
       name: "auth-storage",

@@ -49,7 +49,7 @@ export const useSignIn = () => {
     onError: (error: unknown) => {
       const err = error as AxiosError<ApiErrorData>;
       if (err.response?.status === 400) {
-        toast.error(" البريد الاكتروني او كلمة المرور غير صحيحة ");
+        toast.error(" البريد الاكتروني او كلمة المرور غير صحيحة، أو الحساب لم يسجل بعد ");
       } else {
         toast.error("حدث خطأ بالخادم يرجى المحاولة مرة اخرى");
       }

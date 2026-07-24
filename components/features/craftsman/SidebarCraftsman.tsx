@@ -2,13 +2,13 @@
 import { LINKSARRAY } from "@/types"
 import Image from "next/image"
 import Link from "next/link"
-import { usePathname } from "next/navigation";
-import { CiShoppingCart } from "react-icons/ci"
+import { usePathname, useRouter } from "next/navigation";
 import { FaRegUserCircle } from "react-icons/fa"
-import { LuLayoutDashboard } from "react-icons/lu"
-import { MdOutlineNoAccounts } from "react-icons/md"
+import { LuLayoutDashboard, LuBookOpen, LuLogOut } from "react-icons/lu"
 import { FaCircleArrowLeft } from "react-icons/fa6";
 import { useState } from "react";
+import { useAuthStore } from "@/store/auth-store";
+import { useCraftsmanById } from "@/hooks/craftsman/useCraftsman";
 
 
 
@@ -21,21 +21,15 @@ const Links:LINKSARRAY[] = [
     },
     {
         id: 2,
-        label:  "طلبات العملاء",
-        href: "/dashboard-craftsman/orders",
-        icon: CiShoppingCart
-    },
-    {
-        id: 3,
         label: "الملف الشخصي",
         href: "/dashboard-craftsman/profile",
         icon: FaRegUserCircle
     },
     {
-        id: 4,
-        label: "توثيق الحساب",
-        href: "/dashboard-craftsman/verify-account",
-        icon: MdOutlineNoAccounts
+        id: 3,
+        label: "تعليمات المنصة",
+        href: "/dashboard-craftsman/instructions",
+        icon: LuBookOpen
     }
 ]
 
@@ -44,6 +38,14 @@ const Links:LINKSARRAY[] = [
 const SidebarCraftsman = () => {
     const pathname = usePathname();
     const [isToggled, setIsToggled] = useState<boolean>(false);
+    const { user, logout } = useAuthStore();
+    const { data: craftsman } = useCraftsmanById(user?.personID || 0);
+    const router = useRouter();
+
+    const handleLogout = () => {
+        logout();
+        router.push("/auth/sign-in");
+    };
 
     return (
         <aside className={`select-none relative flex flex-col h-full transition-all duration-300 text-white
@@ -92,19 +94,43 @@ const SidebarCraftsman = () => {
                 </div>
             </div>
 
-            <div className={`pt-6 border-t border-gray-800 flex items-center ${isToggled ? "justify-center" : "justify-center lg:justify-start lg:gap-3"}`}>
-                <Image 
-                    src="/imgs/default_2.jpeg" 
-                    alt="profile image" 
-                    width={35} 
-                    height={35} 
-                    className="rounded-full border border-primary/50 shrink-0" 
-                />
-                {!isToggled && (
-                    <div className="overflow-hidden hidden lg:block">
-                        <h5 className="text-primary text-xs font-bold truncate"> Mohamed Mowafy </h5>
-                        <p className="text-gray-400 text-[9px]"> نجار </p>
+            <div className="pt-6 border-t border-gray-800 flex flex-col items-center gap-4">
+                <div className={`flex items-center w-full ${isToggled ? "justify-center" : "justify-between gap-3"}`}>
+                    <div className="flex items-center gap-3 overflow-hidden">
+                        <Image 
+                            src={craftsman?.profileImageURL || "/imgs/default_2.jpeg"} 
+                            alt="profile image" 
+                            width={35} 
+                            height={35} 
+                            className="rounded-full border border-primary/50 shrink-0 object-cover w-[35px] h-[35px]" 
+                        />
+                        {!isToggled && (
+                            <div className="overflow-hidden hidden lg:block text-right">
+                                <h5 className="text-primary text-xs font-bold truncate font-tajawal"> 
+                                    {craftsman ? `${craftsman.firstName} ${craftsman.lastName}` : (user ? `${user.firstName} ${user.lastName}` : "")} 
+                                </h5>
+                                <p className="text-gray-400 text-[9px] truncate"> {craftsman?.categoryName || "حرفي"} </p>
+                            </div>
+                        )}
                     </div>
+                    {!isToggled && (
+                        <button 
+                            onClick={handleLogout}
+                            className="cursor-pointer text-gray-400 hover:text-red-500 transition-colors p-1.5 rounded-lg hover:bg-gray-800 hidden lg:block shrink-0"
+                            title="تسجيل الخروج"
+                        >
+                            <LuLogOut size={18} />
+                        </button>
+                    )}
+                </div>
+                {isToggled && (
+                    <button 
+                        onClick={handleLogout}
+                        className="cursor-pointer text-gray-400 hover:text-red-500 transition-colors p-2 rounded-xl hover:bg-gray-800"
+                        title="تسجيل الخروج"
+                    >
+                        <LuLogOut size={20} />
+                    </button>
                 )}
             </div>
         </aside>

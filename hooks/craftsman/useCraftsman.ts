@@ -185,12 +185,14 @@ const useGetCraftsmenByCategory = (CategoryID: number) => {
     const query = useQuery<CraftsmanByCategoryType[]>({
         queryKey: QueryKeys.getCraftsmenByCategory(CategoryID),
         queryFn: () => getCraftsmenByCategory(CategoryID),
-        enabled: !!CategoryID
+        enabled: !!CategoryID,
+        staleTime: 0,
+        gcTime: 0
     })
 
     return {
         data: query.data,
-        loading: query.isLoading,
+        loading: query.isLoading || query.isFetching,
         isError: query.isError,
         error: query.error
     }

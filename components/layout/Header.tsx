@@ -76,6 +76,14 @@ const Header = () => {
  const {user} = useAuthStore()
  const  token = getToken();
 
+ if (
+   pathname.startsWith("/dashboard-craftsman") || 
+   pathname.startsWith("/control") ||
+   pathname.startsWith("/auth")
+ ) {
+   return null;
+ }
+
  console.log(token)
 
  const filteredLinks = LINKS_CLIENT.filter(link => {

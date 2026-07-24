@@ -46,10 +46,18 @@ const ChooseRoleContent = () => {
         email: res?.email,
         role: res?.role,
         isVerifyEmail: res?.isVerifyEmail,
-        
+        accessToken: res?.accessToken,
       }
       login(data)
-      router.push("/");
+      if (data.role === "admin") {
+        router.push("/control");
+      } else if (data.role === "craftsman") {
+        router.push("/dashboard-craftsman");
+      } else if (data.role === "client" || data.role === "customer") {
+        router.push("/dashboard-client");
+      } else {
+        router.push("/");
+      }
     }
 
 
@@ -69,7 +77,15 @@ const ChooseRoleContent = () => {
       }
 
       login(staticUser)
-      router.push("/")
+      if (staticUser.role === "admin") {
+        router.push("/control");
+      } else if (staticUser.role === "craftsman") {
+        router.push("/dashboard-craftsman");
+      } else if (staticUser.role === "client" || staticUser.role === "customer") {
+        router.push("/dashboard-client");
+      } else {
+        router.push("/");
+      }
     }
 
 

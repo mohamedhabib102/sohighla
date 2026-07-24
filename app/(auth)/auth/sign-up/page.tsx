@@ -1,3 +1,4 @@
+"use client";
 import SignUpLayout from "@/components/features/auth/SignUpLayout";
 
 

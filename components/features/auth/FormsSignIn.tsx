@@ -47,7 +47,15 @@ const FormsSignIn = () => {
         accessToken: res.accessToken,
       }
       login(userData);
-      router.push("/")
+      if (userData.role === "admin") {
+        router.push("/control");
+      } else if (userData.role === "craftsman") {
+        router.push("/dashboard-craftsman");
+      } else if (userData.role === "client" || userData.role === "customer") {
+        router.push("/dashboard-client");
+      } else {
+        router.push("/");
+      }
      }
   return (
     <div className="w-full max-w-[600px] mx-auto p-6 md:p-14 flex flex-col justify-center min-h-screen">

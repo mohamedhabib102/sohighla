@@ -16,6 +16,7 @@ import { PortfolioType } from "@/types";
 import { BsCalendar2DateFill } from "react-icons/bs";
 import { useQueryClient } from "@tanstack/react-query";
 import { QueryKeys } from "@/lib/query-keys";
+import Link from "next/link";
 
 
 const ProfileCraftsman = () => {
@@ -23,6 +24,7 @@ const ProfileCraftsman = () => {
   const { data, isLoading, isError } = useCraftsmanById(user?.personID || 0);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isPhonePopupOpen, setIsPhonePopupOpen] = useState(false);
+  const [isPrivacyPopupOpen, setIsPrivacyPopupOpen] = useState(false);
   const { mutate, isLoading: isLoadingDeleteWorkImage } = useDeleteWorkImage();
   const { mutate: addImages, isLoading: isAddingImages } = useAddWorkImages();
   const queryClient = useQueryClient();
@@ -118,14 +120,20 @@ const ProfileCraftsman = () => {
                 </div>
             </div>
             {data && (
-              <>
+              <div className="flex flex-row items-center gap-4 mt-6 md:mt-0 self-stretch md:self-auto justify-end md:justify-start w-full md:w-auto shrink-0">
                 <button 
-              onClick={() => setIsPopupOpen(true)}
-              className="mt-6 md:mt-4 flex items-center gap-2 bg-primary hover:bg-primary/90 text-secondary px-5 py-2.5 rounded-xl font-bold text-sm transition-all shadow-sm"
-            >
-                <FiEdit3 size={16} /> تعديل الحساب
-            </button>
-              </>
+                  onClick={() => setIsPopupOpen(true)}
+                  className="flex-1 md:flex-initial flex items-center justify-center gap-2 bg-primary hover:bg-primary/95 text-secondary px-6 py-3 rounded-2xl font-bold text-sm transition-all shadow-md shadow-primary/10 cursor-pointer whitespace-nowrap"
+                >
+                  <FiEdit3 size={16} /> تعديل الحساب
+                </button>
+                <button 
+                  onClick={() => setIsPrivacyPopupOpen(true)}
+                  className="flex-1 md:flex-initial flex items-center justify-center gap-2 border border-gray-200 hover:bg-gray-50 text-secondary px-6 py-3 rounded-2xl font-bold text-sm transition-all shadow-sm cursor-pointer whitespace-nowrap"
+                >
+                  <MdOutlineVerifiedUser size={16} className="text-primary" /> الخصوصية والأمان
+                </button>
+              </div>
             )}
 
 
@@ -370,6 +378,46 @@ const ProfileCraftsman = () => {
             getPhone();
           }} 
         />
+      </Popup>
+
+      {/* Privacy and Security Popup */}
+      <Popup isOpen={isPrivacyPopupOpen} onClose={() => setIsPrivacyPopupOpen(false)} title="الخصوصية والأمان">
+        <div className="space-y-6 text-right font-tajawal p-2" dir="rtl">
+          <div className="flex items-start gap-3 p-4 bg-primary/5 rounded-2xl border border-primary/10">
+            <MdOutlineVerifiedUser className="text-primary text-3xl shrink-0 mt-0.5" />
+            <div>
+              <h4 className="font-bold text-secondary text-sm mb-1">حماية حسابك في شُغلَة</h4>
+              <p className="text-xs text-gray-500 leading-relaxed">
+                خصوصيتك وأمان حسابك هما أولويتنا. ننصحك باستخدام كلمة مرور قوية وتحديثها بشكل دوري لضمان حماية بياناتك وأعمالك من أي محاولات وصول غير مصرح بها.
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <h4 className="font-bold text-secondary text-sm">إعدادات الأمان</h4>
+            <div className="p-4 rounded-2xl border border-gray-100 flex items-center justify-between gap-4 bg-gray-50/30">
+              <div className="space-y-1">
+                <p className="font-bold text-xs text-secondary">تغيير كلمة المرور</p>
+                <p className="text-[11px] text-gray-400">تغيير كلمة المرور الحالية الخاصة بملفك الشخصي.</p>
+              </div>
+              <Link 
+                href="/auth/forgot-password"
+                className="bg-secondary hover:opacity-95 text-white text-xs font-bold px-4 py-2.5 rounded-xl shrink-0 transition-opacity flex items-center gap-1.5"
+              >
+                تغيير كلمة المرور
+              </Link>
+            </div>
+          </div>
+
+          <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 text-right">
+            <h5 className="font-bold text-secondary text-xs mb-2">إرشادات الأمان الهامة:</h5>
+            <ul className="list-disc pr-4 space-y-1.5 text-[11px] text-gray-500">
+              <li>لا تشارك رمز التحقق المكون من 4 أرقام (OTP) مع أي شخص مطلقاً.</li>
+              <li>فريق الدعم الفني للمنصة لن يطلب منك كلمة المرور الخاصة بك أبداً.</li>
+              <li>تأكد من تسجيل الخروج إذا كنت تستخدم جهازاً عاماً أو مشتركاً.</li>
+            </ul>
+          </div>
+        </div>
       </Popup>
     </section>
   );

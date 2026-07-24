@@ -34,7 +34,9 @@ const CraftsmenListClient = () => {
   }, [searchParams]);
 
   const handleCategoryToggle = (id: number) => {
-    if (id !== 0) {
+    if (selectedCategories === id) {
+      setSelectedCategories(0); // Deselect if already selected
+    } else {
       setSelectedCategories(id);
     }
   };
